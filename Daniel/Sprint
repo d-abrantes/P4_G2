@@ -1,0 +1,26 @@
+#include    <stdio.h>
+int main()
+{
+int x;
+float temp;
+int confirmacao=0;
+
+    printf("\nSistema de Monitorização de Temperatura\n========================================\n");
+    while (confirmacao==0)
+    {
+        printf("Digite o valor do sensor:");
+        scanf("%d",&x);
+        if (x <0 && x > 1023)
+            {
+                printf("Valor inválido!\nO valor do sensor deve compreender-se entre 0 e 1023.\n");  
+            }
+        else
+            {
+                confirmacao=1;
+            }
+    }
+    temp = (260*x)/1023.00 - 20.00;
+    printf("A temperatura é: %.2fºC\n", temp);
+    
+    
+}
