@@ -1,0 +1,9 @@
+    #include <stdio.h>
+
+int main(void) {
+    int x;
+    printf("Qual é o valor?: ");
+    scanf("%d", &x);
+    float temp = 260.0 * x / 1023 - 20;
+    printf("%.2fºC\n", temp);
+}
