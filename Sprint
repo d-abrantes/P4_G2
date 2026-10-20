@@ -4,23 +4,43 @@ int main()
 int x;
 float temp;
 int confirmacao=0;
+int validacao=0;
 
     printf("\nSistema de Monitorização de Temperatura\n========================================\n");
-    while (confirmacao==0)
+    while (validacao==0)
     {
-        printf("Digite o valor do sensor:");
-        scanf("%d",&x);
-        if (x <0 && x > 1023)
+        while (confirmacao==0)
+        {
+            printf("Digite o valor do sensor:");
+            if(scanf("%d",&x)==1)
             {
-                printf("Valor inválido!\nO valor do sensor deve compreender-se entre 0 e 1023.\n");  
+                if (x < 0 || x > 1023)
+                    {
+                        printf("Valor inválido!\nO valor do sensor deve compreender-se entre 0 e 1023.\n");
+                    }
+                else
+                    {
+                        confirmacao=1;
+                    }
+                temp = (260.0*x)/1023 - 20;
+                {
+                    if (temp < -10 || temp > 190)
+                    {
+                        printf("Valor fora da gama\n");
+                        confirmacao=0;  
+                    }
+                    else
+                    {
+                        printf("A temperatura é: %.2fºC\n", temp);
+                        validacao=1;
+                    }
+                }
             }
-        else
+            else
             {
-                confirmacao=1;
+                printf("Valor inválido!\nO valor do sensor deve compreender-se entre 0 e 1023.\n");
+                while(getchar()!='\n');
             }
+        }
     }
-    temp = (260*x)/1023.00 - 20.00;
-    printf("A temperatura é: %.2fºC\n", temp);
-    
-    
 }
