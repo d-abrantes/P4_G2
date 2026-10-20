@@ -2,72 +2,89 @@
 int main()
 {
 int x;
-int confirmacao=0;
-int valor=0;
 int quant=0;
 int quantin=0;
+int inserir=0;
+float valor=0;
 float temp;
 float media;
-float max=0;
-float min=1023;
+float max=-10;
+float min=190;
     printf("\nSistema de Monitorização de Temperatura\n========================================\n");
-    while (confirmacao==0)
+    while (inserir<=0)
     {
-        printf("Digite o valor do sensor:");
-        if(scanf("%d",&x)==1)
-            if(x!=-1)
+        printf("Digite o número de valores a inserir:");
+        if(scanf("%d", &inserir)!=1 || inserir<=0)
+        {
+            printf("Valor inválido!\nPor favor insira um número inteiro maior que 0.\n");
+            while(getchar()!='\n');
+        }
+    }
+    while (quant<inserir)
+    {
+            printf("Digite o valor do sensor:");
+            if(scanf("%d",&x)==1)
             {
-                if (x < 0 || x > 1023)
-                    {
-                        printf("Valor inválido!\nO valor do sensor deve compreender-se entre 0 e 1023.\n");
-                        quantin=quantin+1;
-
-                    }
-                else
-                    {
-                        confirmacao=1;
-                    }    
-                temp = (260.0*x)/1023 - 20;
+                if(x!=-1)
                 {
-                    if (temp < -10 || temp > 190)
-                    {
-                        printf("Valor fora da gama\n");
-                        confirmacao=0;  
-                        quantin=quantin+1;
-                    }
+                    if (x < 0 || x > 1023)
+                        {
+                            printf("Valor inválido!\nO valor do sensor deve compreender-se entre 0 e 1023.\n");
+                            quantin=quantin+1;
+
+                        }
                     else
-                    {
-                        printf("A temperatura é: %.2fºC\n", temp);
-                        confirmacao=0;
-                        quant=quant+1;
-                        valor=valor+temp;
-                        if(x>max)
                         {
-                            max=temp;
+                            temp = (260.0*x)/1023 - 20;
+                            {
+                                if (temp < -10 || temp > 190)
+                                {
+                                    printf("Valor fora da gama\n");
+                                    quantin=quantin+1;
+                                }
+                                else
+                                {
+                                    printf("A temperatura é: %.2fºC\n", temp);
+                                    quant=quant+1;
+                                    valor=valor+temp;
+                                    if(temp>max)
+                                    {
+                                        max=temp;
+                                    }
+                                    if(temp<min)
+                                    {
+                                        min=temp;
+                                    }
+                                }
+                            }
                         }
-                        if(x<min)
-                        {
-                            min=temp;
-                        }
-                    }
+                }
+                else
+                {
+                   break;
                 }
             }
             else
             {
-                media=(valor/quant);
-                printf("\n=== RESULTADOS ===\n");
-                printf("Número de valores válidos: %d\n",quant);
-                printf("Número de valores inválidos: %d\n",quantin);
-                printf("A média dos valores válidos é: %.2fºC\n",media);
-                printf("O valor máximo é: %.2fºC\n",max);
-                printf("O valor mínimo é: %.2fºC\n",min);
-                return 0;
+                printf("Valor inválido!\nO valor do sensor deve compreender-se entre 0 e 1023.\n");
+                quantin=quantin+1;
+                while(getchar()!='\n');
             }
+        
+    }
+        if(quant>0)    
+        {
+            media=(valor/quant);
+            printf("\n=== RESULTADOS ===\n");
+            printf("Número de valores válidos: %d\n",quant);
+            printf("Número de valores inválidos: %d\n",quantin);
+            printf("A média dos valores válidos é: %.2fºC\n",media);
+            printf("O valor máximo é: %.2fºC\n",max);
+            printf("O valor mínimo é: %.2fºC\n",min);
+            return 0;
+        }
         else
         {
-            printf("Valor inválido!\nO valor do sensor deve compreender-se entre 0 e 1023.\n");
-            quantin=quantin+1;
-            while(getchar()!='\n');
+            printf("Sem dados recolhidos!\n");
         }
     }
-}
