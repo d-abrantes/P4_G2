@@ -1,11 +1,23 @@
-#include <stdio.h>
+  #include <stdio.h>
 
-int main (void)
+  #include <math.h>
+
+  #define MAX 5
+
+int main (void) 
 
 {
     int x;
+    int max = -10;
+    int min = 190;
+    int valores[MAX];
+    int contador = 0;
+    float soma = 0;
+    float media = 0;
+    float desvio = 0;
+    float soma_quadrados = 0;
     
-    while (1)
+    while (contador < MAX)
     {
         printf ("Qual é o valor? ");
 
@@ -16,6 +28,10 @@ int main (void)
             while (getchar() != '\n');
 
             continue;
+        }
+
+        if (x == -1) {
+            break;
         }
 
         if (0 <= x && x <= 1023) 
@@ -29,9 +45,56 @@ int main (void)
             printf ("\nValor fora da gama\n\n\n");
         }
 
-        if (x == -1) {
-            return 0;
-        }
+        valores[contador] = x;
+        contador++;
 
     }
+
+        printf("\nValores lidos (sensor -> temperatura):\n\n");
+
+        for (int i = 0; i < contador; i++)
+    {
+        float temp = 260.0 * valores[i] / 1023 - 20;
+        printf("%d -> %.2f\n", valores[i], temp);
+
+            if (temp > max)
+        {
+            max = temp;
+        }
+
+        if (temp < min)
+        {
+            min = temp;
+        }
+
+        soma = soma + temp;
+
+    }
+
+        if (contador > 0)
+    {
+            media = soma / contador;
+
+            for (int i = 0; i < contador; i++)
+        {
+            float temp = 260.0 * valores[i] / 1023 - 20;
+
+            soma_quadrados = soma_quadrados + (temp - media) * (temp - media);
+        }
+
+        
+        desvio = __builtin_sqrt(soma_quadrados / contador);
+
+    }
+
+        printf("\nNúmero de valores lidos: %d\n", contador);
+
+        if (contador > 0)
+    {
+        printf("Temperatura mínima: %.2dºC\n", min);
+        printf("Temperatura máxima: %.2dºC\n", max);
+        printf("Temperatura média: %.2fºC\n", media);
+        printf("Desvio-padrão: %.2f\n", desvio);
+    }
+
 }
