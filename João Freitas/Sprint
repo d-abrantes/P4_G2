@@ -1,38 +1,12 @@
-    #include <stdio.h>
+#include <stdio.h>
 
-int main(void) {
-    int x; 
-    float valor=0;
-    int quant=0;
-    int max=0;
-    int min=1023;
-    while (1) {
-    printf("Qual é o valor?");
-    scanf("%d", &x);
-    if (x != -1){
-    if (0 <= x && x <= 1023) { 
-        printf("Valor válido\n");}
-    float temp = 260.0 * x / 1023 - 20;
-    if (-10 <= temp && temp <= 190) {
-        printf("Valor: %.2fºC\n", temp);
-        valor = valor+temp;
-        quant= quant+1;
-        if (x>max) {
-            max=temp;
-        }
-        if (x<min) {
-            min=temp;
-        }
-        }
-    else {
-        printf("Valor fora da gama\n");
-    }
-} else {
-    printf("Números de valores válidos: %.2d\n", quant);
-    printf("Média dos valores válidos: %.2fºC\n", valor/quant);
-    printf("Valor máximo: %.2dºC\n", max);
-    printf("Valor mínimo: %.2dºC\n", min);
-     return 0;
-    }
-}
+int main (void)
+
+{
+    int x;
+    printf ("Qual é o valor?\n");
+    scanf ("%d", &x);
+    float temp = 260*x/1023 - 20;
+    printf ("Valor: %.2fºC\n", temp);
+
 }
