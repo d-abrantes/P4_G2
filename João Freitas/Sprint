@@ -29,10 +29,9 @@ int main (void)
             printf ("\nValor fora da gama\n\n\n");
         }
 
-        if (x == 0) {
+        if (x == -1) {
             return 0;
         }
 
     }
 }
-
