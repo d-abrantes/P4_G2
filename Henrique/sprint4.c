@@ -29,28 +29,29 @@ int main()
     else
     {
         int todosval[repeticoes];
-        float todostemp[repeticoes];
-        float distmed2[repeticoes];        
+        float todostemp[repeticoes];       
 
         for (int i = 0; i < repeticoes; i++)
         {
-
-            printf("Qual é o valor: ");
-            while (scanf("%d", &valor)!= 1 || (valor <= 0 && valor != -1) || (valor >= 1023))
-            {
-            
-                while(getchar()!= '\n');                      
-
-                printf("Inválido, escreva apenas números de 0 a 1023!\n");
+            do
+            {                
                 printf("Qual é o valor: ");
+
                 
-            }
-            if(valor == -1)
-            {
-                return 0;
-            }
-            else
-            {
+                while (scanf("%d", &valor)!= 1 || (valor < 0 && valor != -1) || (valor > 1023))
+                {               
+                    while(getchar()!= '\n');                      
+
+                    printf("Inválido, escreva apenas números de 0 a 1023!\n");
+                    printf("Qual é o valor: ");            
+                }
+
+                if(valor == -1)
+                {
+                    return 0;
+                }
+                else
+                {
                     temp = 260*valor/1023.00 - 20.00;
                     if (-10 <= temp && temp <= 190)
                     {
@@ -59,14 +60,15 @@ int main()
                         todosval[i] = valor ;
                         todostemp[i] = temp ;
 
-
                     }
                     else
                     {
                         printf("O valor está fora da gama\n");
                     }
-            }
+                }
+            } while (-10 > temp || temp > 190);
         }    
+
         //media min e max
         for (int i = 0; i < repeticoes; i++)
         {
@@ -76,42 +78,29 @@ int main()
             {
                 min = todostemp[i];
             } 
-            else  // acabar esta merda tirar o elif?
+            if(max < todostemp[i])
             {
                 max = todostemp[i];
             }            
         }
-
         media = somatemp/repeticoes;
 
         //desvio
         for (int i = 0; i < repeticoes; i++)
         {
-            distmed2[i] = pow(todostemp[i] - media, 2);
-            somadist += distmed2[i];
+            somadist += pow(todostemp[i] - media, 2);
         }
-
         desvio = sqrt(somadist / repeticoes);
 
 
         printf("\nLista de todos os valores lidos:(%d)\n", repeticoes);
         for (int i = 0; i < repeticoes; i++)
         {
-            printf("%d --> %fºC\n", todosval[i], todostemp[i]); 
+            printf("%d --> %.2fºC\n", todosval[i], todostemp[i]); 
         }
         printf("\nMédia:%.2fºC\n", media);
         printf("Minimo:%.2fºC\n", min);
         printf("Máximo:%.2fºC\n", max);
         printf("Desvio:%.2fºC\n", desvio);
-    }
-    
-    
-    
-    
-    
-    
-    
- 
- 
-    
+    }    
 }
