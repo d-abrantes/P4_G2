@@ -4,9 +4,34 @@ int main (void)
 
 {
     int x;
-    printf ("Qual é o valor?\n");
-    scanf ("%d", &x);
-    float temp = 260*x/1023 - 20;
-    printf ("Valor: %.2fºC\n", temp);
+    
+    while (1)
+    {
+        printf ("Qual é o valor? ");
 
+        if (scanf("%d", &x) != 1)
+        {
+            printf("\nIntroduza um numero inteiro!\n\n\n");
+
+            while (getchar() != '\n');
+
+            continue;
+        }
+
+        if (0 <= x && x <= 1023) 
+        {
+            float temp = 260.0*x/1023 - 20;
+            printf ("\nValor válido: %.2fºC\n\n\n", temp);
+        }
+
+        else
+        {
+            printf ("\nValor fora da gama\n\n\n");
+        }
+
+        if (x == 0) {
+            return 0;
+        }
+
+    }
 }
