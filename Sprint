@@ -1,46 +1,168 @@
 #include    <stdio.h>
+#include    <math.h>
+//Limpa o Buffer
+void limpar_buffer()
+{
+    while(getchar()!='\n');
+}
+// Converter um valor do sensor em temperatura
+float converter(int x)
+{
+    return (260.0*x)/1023 - 20;
+}
+// Validar se a temperatura é dentro da Gama
+int validar(float x)
+{
+    if(x<-10||x>190)
+    {
+        return 1;
+    }
+    else 
+    {
+        return 0;
+    }
+}
+// Apresentação das temperaturas calculadas
+void ler_valores(float lista[],int quant)
+{
+      for (int i=0; i<quant; i++)
+            {
+                printf("Valor %d: %.2fºC\n",i+1,lista[i]);
+            }
+}
+// Cálculo do Desvio
+float desvio(float lista[], int quant)
+{
+    float soma_quadrados=0;
+    float valor=0;
+    for (int i=0; i<quant; i++)
+    {
+        valor=valor+lista[i];
+    }
+    for (int i=0; i<quant; i++)
+            {
+                soma_quadrados=((lista[i]-(valor/quant))*(lista[i]-(valor/quant))) + soma_quadrados;
+            }
+            return sqrt(soma_quadrados/quant);
+}
+// Cálculo da temperatura máxima
+float max(float lista[],int quant)
+{
+    float max=lista[0];
+    for(int i=0; i<quant; i++)
+    {
+        if (lista[i]>max)
+        {
+        max=lista[i];
+        }
+    }
+    return max;
+}
+// Cálculo da temperatura minima
+float min(float lista[],int quant)
+{
+    float min=lista[0];
+    for(int i=0; i<quant; i++)
+    {
+        if (lista[i]<min)
+        {
+        min=lista[i];
+        }
+    }
+    return min;
+}
+// Cálculo da Média
+float media(float lista[], int quant)
+{
+    float valor=0;
+    for (int i=0; i<quant; i++)
+    {
+        valor=valor+lista[i];
+    }
+    return valor/quant;
+}
+// Cálculo Apresentação de todos os valores e estatisticas
+void apresentar (float lista[],int quant, int quantin)
+{
+    printf("\n=== VALORES VÁLIDOS ===\n");
+            ler_valores(lista,quant);
+            printf("\n=== RESULTADOS ===\n");
+            printf("Número de valores válidos: %d\n",quant);
+            printf("Número de valores inválidos: %d\n",quantin);
+            printf("A média dos valores válidos é: %.2fºC\n",media(lista,quant));
+            printf("O valor mínimo é: %.2fºC\n",min(lista,quant));
+            printf("O valor máximo é: %.2fºC\n",max(lista,quant));
+            printf("O desvio padrão é: %.2fºC\n",desvio(lista,quant));
+}
 int main()
 {
 int x;
+int quant=0;
+int quantin=0;
+int inserir=0;
 float temp;
-int confirmacao=0;
-int validacao=0;
-
     printf("\nSistema de Monitorização de Temperatura\n========================================\n");
-    while (validacao==0)
+    while (inserir<=0)
     {
-        while (confirmacao==0)
+        printf("Digite o número de valores a inserir:");
+        if(scanf("%d", &inserir)!=1 || inserir<=0)
         {
+            printf("Valor inválido!\nPor favor insira um número inteiro maior que 0.\n");
+            limpar_buffer();
+        }
+    }
+float lista[inserir];
+    while (quant<inserir)
+    {
             printf("Digite o valor do sensor:");
             if(scanf("%d",&x)==1)
             {
-                if (x < 0 || x > 1023)
-                    {
-                        printf("Valor inválido!\nO valor do sensor deve compreender-se entre 0 e 1023.\n");
-                    }
-                else
-                    {
-                        confirmacao=1;
-                    }
-                temp = (260.0*x)/1023 - 20;
+                if(x!=-1)
                 {
-                    if (temp < -10 || temp > 190)
-                    {
-                        printf("Valor fora da gama\n");
-                        confirmacao=0;  
-                    }
+                    if (x < 0 || x > 1023)
+                        {
+                            printf("Valor inválido!\nO valor do sensor deve compreender-se entre 0 e 1023.\n");
+                            quantin=quantin+1;
+                            limpar_buffer();
+                            
+                        }
                     else
-                    {
-                        printf("A temperatura é: %.2fºC\n", temp);
-                        validacao=1;
-                    }
+                        {
+                            temp= converter(x);
+                            {
+                                if (validar(temp))
+                                {
+                                    printf("Valor fora da gama\n");
+                                    quantin=quantin+1;
+                                }
+                                else
+                                {
+                                    printf("A temperatura é: %.2fºC\n", temp);
+                                    lista[quant]=temp;
+                                    quant=quant+1;
+                                }
+                            }
+                        }
+                }
+                else
+                {
+                   break;
                 }
             }
             else
             {
                 printf("Valor inválido!\nO valor do sensor deve compreender-se entre 0 e 1023.\n");
-                while(getchar()!='\n');
+                quantin=quantin+1;
+                limpar_buffer();
             }
-        }
+        
     }
+        if(quant>0)    
+        {
+            apresentar(lista,quant,quantin);
+        }
+        else
+        {
+            printf("Sem dados recolhidos!\n");
+        }
 }
