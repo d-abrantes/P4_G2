@@ -1,100 +1,192 @@
-  #include <stdio.h>
 
-  #include <math.h>
+#include <stdio.h>
+#include <math.h>
 
-  #define MAX 5
+#define MAX 5
 
-int main (void) 
+// Converter um valor do sensor em temperatura
+float converter_temperatura(int sensor)
+{
+    return 260.0 * sensor / 1023 - 20;
+}
 
+// Verificar se uma temperatura é válida
+int validar_temperatura(float temp)
+{
+    return temp >= -10 && temp <= 190;
+}
+
+// Ler a sequência de valores do sensor
+int ler_valores(int valores[])
 {
     int x;
-    int max = -10;
-    int min = 190;
-    int valores[MAX];
     int contador = 0;
-    float soma = 0;
-    float media = 0;
-    float desvio = 0;
-    float soma_quadrados = 0;
-    
+
     while (contador < MAX)
     {
-        printf ("Qual é o valor? ");
+        printf("Qual é o valor? ");
 
         if (scanf("%d", &x) != 1)
         {
             printf("\nIntroduza um numero inteiro!\n\n\n");
 
-            while (getchar() != '\n');
+            int c;
+            while ((c = getchar()) != '\n' && c != EOF);
+
+            if (c == EOF)
+            {
+                break;
+            }
 
             continue;
         }
 
-        if (x == -1) {
+        if (x == -1)
+        {
             break;
         }
 
-        if (0 <= x && x <= 1023) 
+        if (0 <= x && x <= 1023 && validar_temperatura(converter_temperatura(x)))
         {
-            float temp = 260.0*x/1023 - 20;
-            printf ("\nValor válido: %.2fºC\n\n\n", temp);
+            float temp = converter_temperatura(x);
+
+            printf("\nValor válido: %.2fºC\n\n\n", temp);
         }
 
         else
         {
-            printf ("\nValor fora da gama\n\n\n");
+            printf("\nValor fora da gama\n\n\n");
         }
 
         valores[contador] = x;
         contador++;
-
     }
 
-        printf("\nValores lidos (sensor -> temperatura):\n\n");
+    return contador;
+}
 
-        for (int i = 0; i < contador; i++)
+// Calcular a temperatura máxima
+float calcular_maximo(int valores[], int contador)
+{
+    float max = converter_temperatura(valores[0]);
+
+    for (int i = 0; i < contador; i++)
     {
-        float temp = 260.0 * valores[i] / 1023 - 20;
-        printf("%d -> %.2f\n", valores[i], temp);
+        float temp = converter_temperatura(valores[i]);
 
-            if (temp > max)
+        if (temp > max)
         {
             max = temp;
         }
+    }
+
+    return max;
+}
+
+// Calcular a temperatura mínima
+float calcular_minimo(int valores[], int contador)
+{
+    float min = converter_temperatura(valores[0]);
+
+    for (int i = 0; i < contador; i++)
+    {
+        float temp = converter_temperatura(valores[i]);
 
         if (temp < min)
         {
             min = temp;
         }
+    }
+
+    return min;
+}
+
+// Calcular a temperatura média
+float calcular_media(int valores[], int contador)
+{
+    float soma = 0;
+    float media = 0;
+
+    for (int i = 0; i < contador; i++)
+    {
+        float temp = converter_temperatura(valores[i]);
 
         soma = soma + temp;
-
     }
 
-        if (contador > 0)
+    if (contador > 0)
     {
-            media = soma / contador;
-
-            for (int i = 0; i < contador; i++)
-        {
-            float temp = 260.0 * valores[i] / 1023 - 20;
-
-            soma_quadrados = soma_quadrados + (temp - media) * (temp - media);
-        }
-
-        
-        desvio = __builtin_sqrt(soma_quadrados / contador);
-
+        media = soma / contador;
     }
 
-        printf("\nNúmero de valores lidos: %d\n", contador);
+    return media;
+}
 
-        if (contador > 0)
+// Calcular o desvio-padrão
+float calcular_desvio(int valores[], int contador)
+{
+    float media = calcular_media(valores, contador);
+    float desvio = 0;
+    float soma_quadrados = 0;
+
+    for (int i = 0; i < contador; i++)
     {
-        printf("Temperatura mínima: %.2dºC\n", min);
-        printf("Temperatura máxima: %.2dºC\n", max);
+        float temp = converter_temperatura(valores[i]);
+
+        soma_quadrados = soma_quadrados + (temp - media) * (temp - media);
+    }
+
+    if (contador > 0)
+    {
+        desvio = sqrt(soma_quadrados / contador);
+    }
+
+    return desvio;
+}
+
+// Apresentar a lista de valores lidos
+void apresentar_valores(int valores[], int contador)
+{
+    printf("\nValores lidos (sensor -> temperatura):\n\n");
+
+    for (int i = 0; i < contador; i++)
+    {
+        float temp = converter_temperatura(valores[i]);
+
+        printf("%d -> %.2f\n", valores[i], temp);
+    }
+}
+
+// Apresentar as estatísticas
+void apresentar_estatisticas(int valores[], int contador)
+{
+    printf("\nNúmero de valores lidos: %d\n", contador);
+
+    if (contador > 0)
+    {
+        float min = calcular_minimo(valores, contador);
+        float max = calcular_maximo(valores, contador);
+        float media = calcular_media(valores, contador);
+        float desvio = calcular_desvio(valores, contador);
+
+        printf("Temperatura mínima: %.2fºC\n", min);
+        printf("Temperatura máxima: %.2fºC\n", max);
         printf("Temperatura média: %.2fºC\n", media);
         printf("Desvio-padrão: %.2f\n", desvio);
     }
+}
 
+// Programa principal
+int main(void)
+{
+    int valores[MAX];
+    int contador = 0;
+
+    contador = ler_valores(valores);
+
+    apresentar_valores(valores, contador);
+
+    apresentar_estatisticas(valores, contador);
+
+    return 0;
 }
