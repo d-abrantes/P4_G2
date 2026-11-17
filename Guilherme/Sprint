@@ -1,34 +1,106 @@
 #include <stdio.h>
+#include <math.h>
+
+#define MAX_LEITURAS 20
 
 int main() {
     int x;
+    int leituras[MAX_LEITURAS];
+    float temperaturas[MAX_LEITURAS];
+
+    int nleituras = 0;
+    int nvalidas = 0;
+
     float temp;
+    float soma = 0;
+    float media;
+    float desvio = 0;
+    float maximo, minimo;
 
-    printf("Introduza o valor do sensor (-1 para terminar): ");
+    char linha[100];
+    char extra;
 
-    while (1) {
+    /* Leitura dos valores */
+    while (nleituras < MAX_LEITURAS) {
 
-        if (scanf("%d", &x) != 1) {
-            printf("Valor incorreto. Tente novamente: ");
+        printf("Introduza um valor (-1 para terminar): ");
 
-            while (getchar() != '\n');
-            continue;
+        /* Validar se foi introduzido um inteiro */
+        while (1) {
+            if (fgets(linha, sizeof(linha), stdin) == NULL) {
+                break;
+            }
+
+            if (sscanf(linha, " %d %c", &x, &extra) == 1) {
+                break;
+            }
+
+            printf("Valor incorreto. Introduza um inteiro: ");
         }
 
         if (x == -1) {
             break;
         }
 
+        leituras[nleituras] = x;
+        nleituras++;
+
         temp = 260.0 * x / 1023 - 20;
 
         if (temp >= -10 && temp <= 190) {
-            printf("%.2f\n", temp);
+
+            printf("Temperatura: %.2f\n", temp);
+
+            temperaturas[nvalidas] = temp;
+
+            if (nvalidas == 0) {
+                maximo = temp;
+                minimo = temp;
+            } else {
+                if (temp > maximo) {
+                    maximo = temp;
+                }
+
+                if (temp < minimo) {
+                    minimo = temp;
+                }
+            }
+
+            soma += temp;
+            nvalidas++;
+
         } else {
             printf("Valor fora da gama\n");
         }
-
-        printf("Introduza outro valor (-1 para terminar): ");
     }
 
-    return 0;
-}
+    /* Apresentar as leituras */
+    printf("\n--- LEITURAS REGISTADAS ---\n");
+
+    for (int i = 0; i < nleituras; i++) {
+        printf("%d\n", leituras[i]);
+    }
+
+    printf("Numero de valores lidos: %d\n", nleituras);
+    printf("Numero de temperaturas validas: %d\n", nvalidas);
+
+    /* Calcular estatisticas */
+    if (nvalidas > 0) {
+
+        media = soma / nvalidas;
+
+        for (int i = 0; i < nvalidas; i++) {
+            desvio += (temperaturas[i] - media) *
+                      (temperaturas[i] - media);
+        }
+
+        desvio = sqrt(desvio / nvalidas);
+
+        printf("Temperatura maxima: %.2f\n", maximo);
+        printf("Temperatura minima: %.2f\n", minimo);
+        printf("Media: %.2f\n", media);
+        printf("Desvio-padrao: %.2f\n", desvio);
+
+    } else {
+        printf("Nao existem temperaturas validas para calcular estatisticas.\n");
+    }
