@@ -14,18 +14,23 @@ int verificartemp(float x)
 
 }
 
-int lervalores()
+void lervalores(int *sensor, int *indice, int *valor)
 {
-    printf("Qual é o valor: ");
-    int x;
-    while (scanf("%d", &x)!= 1 || (x < 0 && x != -1) || (x > 1023))
+    printf("Qual é o sensor[1 a 3] e o valor[0 a 1023]: ");
+    int y;
+    int x; 
+    int z; 
+    while (scanf("temp%d %d %d", &y, &z, &x)!= 2 || (x < 0 && x != -1) || (x > 1023) || y < 1 || y > 3)
     {               
         while(getchar()!= '\n');                      
 
         printf("Inválido, escreva apenas números de 0 a 1023!\n");
         printf("Qual é o valor: ");            
     }
-    return x;
+    while(getchar()!= '\n');    
+    *valor = x;
+    *sensor = y;
+    *indice = z;
 }
 
 float minimo(float x, float *y, int n)
@@ -87,6 +92,8 @@ void resultados(int repeticoes, int *todosval, float *todostemp, float media, fl
 int main()
 {
     int valor ;
+    int sensor;
+    int indice;
     int repeticoes;
     float temp;
     float media;
@@ -103,21 +110,23 @@ int main()
         printf("Inválido, escreva apenas números positivos!\n");
         printf("Quantas repetições: ");    
     }
+    while(getchar()!= '\n'); 
     if(repeticoes == -1) 
     {
         return 0;
     }
     else
     {
-        int todosval[repeticoes];
+        int todosval[][repeticoes];
         float todostemp[repeticoes];       
 
         for (int i = 0; i < repeticoes; i++)
         {
             do
             {                
-                valor = lervalores();
 
+                lervalores(&valor, &sensor);
+                printf("%d", sensor);
                 if(valor == -1)
                 {
                     return 0;
@@ -129,8 +138,8 @@ int main()
                     {
                         printf("Valor: %.2fºC\n", temp);
 
-                        todosval[i] = valor ;
-                        todostemp[i] = temp ;
+                        todosval[sensor-1][i] = valor;
+                        todostemp[sensor-1][i] = temp;
 
                     }
                     else
