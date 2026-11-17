@@ -9,7 +9,11 @@ int main() {
 
     temp = 260.0 * x / 1023 - 20;
 
-    printf("%.2f\n", temp);
+    if (temp >= -10 && temp <= 190) {
+        printf("%.2f\n", temp);
+    } else {
+        printf("Valor fora da gama\n");
+    }
 
     return 0;
 }
