@@ -1,1 +1,16 @@
 
+#include <stdio.h>
+
+int main() {
+    int x;
+    float temp;
+
+    printf("Introduza o valor do sensor: ");
+    scanf("%d", &x);
+
+    temp = 260.0 * x / 1023 - 20;
+
+    printf("%.2f\n", temp);
+
+    return 0;
+}
