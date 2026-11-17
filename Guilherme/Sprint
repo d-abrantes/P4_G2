@@ -1,19 +1,34 @@
-
 #include <stdio.h>
 
 int main() {
     int x;
     float temp;
 
-    printf("Introduza o valor do sensor: ");
-    scanf("%d", &x);
+    printf("Introduza o valor do sensor (-1 para terminar): ");
 
-    temp = 260.0 * x / 1023 - 20;
+    while (1) {
 
-    if (temp >= -10 && temp <= 190) {
-        printf("%.2f\n", temp);
-    } else {
-        printf("Valor fora da gama\n");
+        if (scanf("%d", &x) != 1) {
+            printf("Valor incorreto. Tente novamente: ");
+
+            while (getchar() != '\n');
+            continue;
+        }
+
+        if (x == -1) {
+            break;
+        }
+
+        temp = 260.0 * x / 1023 - 20;
+
+        if (temp >= -10 && temp <= 190) {
+            printf("%.2f\n", temp);
+        } else {
+            printf("Valor fora da gama\n");
+        }
+
+        printf("Introduza outro valor (-1 para terminar): ");
     }
 
     return 0;
+}
