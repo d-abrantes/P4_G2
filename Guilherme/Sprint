@@ -2,105 +2,176 @@
 #include <math.h>
 
 #define MAX_LEITURAS 20
+#define TEMP_MINIMA -10.0
+#define TEMP_MAXIMA 190.0
 
-int main() {
-    int x;
-    int leituras[MAX_LEITURAS];
-    float temperaturas[MAX_LEITURAS];
+/* Converte um valor do sensor numa temperatura. */
+float converterTemperatura(int valorSensor) {
+    return 260.0 * valorSensor / 1023 - 20;
+}
 
-    int nleituras = 0;
-    int nvalidas = 0;
+/* Verifica se a temperatura está dentro da gama permitida. */
+int temperaturaValida(float temperatura) {
+    return temperatura >= TEMP_MINIMA &&
+           temperatura <= TEMP_MAXIMA;
+}
 
-    float temp;
-    float soma = 0;
-    float media;
-    float desvio = 0;
-    float maximo, minimo;
+/* Lê a sequência de valores e guarda as leituras e temperaturas válidas.
+   Devolve o número de leituras e atualiza a quantidade de temperaturas válidas. */
+int lerValores(int valoresSensor[],
+               float temperaturas[],
+               int *quantidadeValidas) {
 
+    int valorSensor;
+    int quantidadeLeituras = 0;
     char linha[100];
     char extra;
 
-    /* Leitura dos valores */
-    while (nleituras < MAX_LEITURAS) {
+    *quantidadeValidas = 0;
+
+    while (quantidadeLeituras < MAX_LEITURAS) {
 
         printf("Introduza um valor (-1 para terminar): ");
 
-        /* Validar se foi introduzido um inteiro */
+        /* Repete a leitura até receber um inteiro. */
         while (1) {
             if (fgets(linha, sizeof(linha), stdin) == NULL) {
-                break;
+                return quantidadeLeituras;
             }
 
-            if (sscanf(linha, " %d %c", &x, &extra) == 1) {
+            if (sscanf(linha, " %d %c",
+                       &valorSensor, &extra) == 1) {
                 break;
             }
 
             printf("Valor incorreto. Introduza um inteiro: ");
         }
 
-        if (x == -1) {
+        if (valorSensor == -1) {
             break;
         }
 
-        leituras[nleituras] = x;
-        nleituras++;
+        valoresSensor[quantidadeLeituras] = valorSensor;
+        quantidadeLeituras++;
 
-        temp = 260.0 * x / 1023 - 20;
+        float temperatura = converterTemperatura(valorSensor);
 
-        if (temp >= -10 && temp <= 190) {
+        if (temperaturaValida(temperatura)) {
+            printf("Temperatura: %.2f\n", temperatura);
 
-            printf("Temperatura: %.2f\n", temp);
-
-            temperaturas[nvalidas] = temp;
-
-            if (nvalidas == 0) {
-                maximo = temp;
-                minimo = temp;
-            } else {
-                if (temp > maximo) {
-                    maximo = temp;
-                }
-
-                if (temp < minimo) {
-                    minimo = temp;
-                }
-            }
-
-            soma += temp;
-            nvalidas++;
-
+            temperaturas[*quantidadeValidas] = temperatura;
+            (*quantidadeValidas)++;
         } else {
             printf("Valor fora da gama\n");
         }
     }
 
-    /* Apresentar as leituras */
-    printf("\n--- LEITURAS REGISTADAS ---\n");
+    return quantidadeLeituras;
+}
 
-    for (int i = 0; i < nleituras; i++) {
-        printf("%d\n", leituras[i]);
+/* Calcula a temperatura mínima de um conjunto. */
+float calcularMinimo(const float temperaturas[], int quantidade) {
+    float minimo = temperaturas[0];
+
+    for (int i = 1; i < quantidade; i++) {
+        if (temperaturas[i] < minimo) {
+            minimo = temperaturas[i];
+        }
     }
 
-    printf("Numero de valores lidos: %d\n", nleituras);
-    printf("Numero de temperaturas validas: %d\n", nvalidas);
+    return minimo;
+}
 
-    /* Calcular estatisticas */
-    if (nvalidas > 0) {
+/* Calcula a temperatura máxima de um conjunto. */
+float calcularMaximo(const float temperaturas[], int quantidade) {
+    float maximo = temperaturas[0];
 
-        media = soma / nvalidas;
-
-        for (int i = 0; i < nvalidas; i++) {
-            desvio += (temperaturas[i] - media) *
-                      (temperaturas[i] - media);
+    for (int i = 1; i < quantidade; i++) {
+        if (temperaturas[i] > maximo) {
+            maximo = temperaturas[i];
         }
+    }
 
-        desvio = sqrt(desvio / nvalidas);
+    return maximo;
+}
 
-        printf("Temperatura maxima: %.2f\n", maximo);
-        printf("Temperatura minima: %.2f\n", minimo);
-        printf("Media: %.2f\n", media);
-        printf("Desvio-padrao: %.2f\n", desvio);
+/* Calcula a média das temperaturas. */
+float calcularMedia(const float temperaturas[], int quantidade) {
+    float soma = 0;
 
+    for (int i = 0; i < quantidade; i++) {
+        soma += temperaturas[i];
+    }
+
+    return soma / quantidade;
+}
+
+/* Calcula o desvio-padrão populacional das temperaturas. */
+float calcularDesvioPadrao(const float temperaturas[], int quantidade) {
+    float media = calcularMedia(temperaturas, quantidade);
+    float soma = 0;
+
+    for (int i = 0; i < quantidade; i++) {
+        soma += (temperaturas[i] - media) *
+                (temperaturas[i] - media);
+    }
+
+    return sqrt(soma / quantidade);
+}
+
+/* Apresenta as leituras e as estatísticas calculadas. */
+void apresentarResultados(const int valoresSensor[],
+                          int quantidadeLeituras,
+                          int quantidadeValidas,
+                          const float temperaturas[]) {
+
+    printf("\n--- LEITURAS REGISTADAS ---\n");
+
+    for (int i = 0; i < quantidadeLeituras; i++) {
+        printf("%d\n", valoresSensor[i]);
+    }
+
+    printf("Numero de valores lidos: %d\n", quantidadeLeituras);
+    printf("Numero de temperaturas validas: %d\n", quantidadeValidas);
+
+    if (quantidadeValidas > 0) {
+        printf("Temperatura maxima: %.2f\n",
+               calcularMaximo(temperaturas, quantidadeValidas));
+
+        printf("Temperatura minima: %.2f\n",
+               calcularMinimo(temperaturas, quantidadeValidas));
+
+        printf("Media: %.2f\n",
+               calcularMedia(temperaturas, quantidadeValidas));
+
+        printf("Desvio-padrao: %.2f\n",
+               calcularDesvioPadrao(temperaturas, quantidadeValidas));
     } else {
         printf("Nao existem temperaturas validas para calcular estatisticas.\n");
     }
+}
+
+/* Programa principal: coordena a leitura e a apresentação dos resultados. */
+int main() {
+
+    int valoresSensor[MAX_LEITURAS];
+    float temperaturas[MAX_LEITURAS];
+
+    int quantidadeValidas;
+    int quantidadeLeituras;
+
+    quantidadeLeituras = lerValores(
+        valoresSensor,
+        temperaturas,
+        &quantidadeValidas
+    );
+
+    apresentarResultados(
+        valoresSensor,
+        quantidadeLeituras,
+        quantidadeValidas,
+        temperaturas
+    );
+
+    return 0;
+}
